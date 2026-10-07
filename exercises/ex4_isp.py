@@ -25,36 +25,33 @@ Run it to see the race once Drone exists:
 Check your work:
     pytest tests/test_ex4_isp.py -v
 """
+
 from abc import ABC, abstractmethod
 
 from engine.track import Track
 
 
-class VehicleActions(ABC):
-    """VIOLATION (on purpose): one fat interface forces every vehicle to
-    implement actions that don't apply to it. Split this into smaller
-    interfaces (see the module docstring) instead of using this class.
-    """
-
+class Movable(ABC):
     @abstractmethod
     def move(self) -> None: ...
 
+
+class Refuelable(ABC):
     @abstractmethod
     def refuel(self) -> None: ...
 
+
+class Flyable(ABC):
     @abstractmethod
     def fly(self) -> None: ...
 
+
+class Pedalable(ABC):
     @abstractmethod
     def pedal_harder(self) -> None: ...
 
 
-# TODO(ISP): define Movable, Refuelable, Flyable and Pedalable here,
-# each with exactly one abstract method, and delete VehicleActions above
-# once nothing uses it any more.
-
-
-class GasCar(VehicleActions):
+class GasCar(Movable, Refuelable):
     symbol = "\U0001F697"
 
     def __init__(self, name):
@@ -67,16 +64,8 @@ class GasCar(VehicleActions):
     def refuel(self):
         print(f"{self.name} refuels at the gas station.")
 
-    def fly(self):
-        # TODO(ISP): once GasCar only implements the interfaces it needs,
-        # this method (and the one below) should not need to exist.
-        raise NotImplementedError("Cars can't fly!")
 
-    def pedal_harder(self):
-        raise NotImplementedError("Cars don't have pedals!")
-
-
-class Bicycle(VehicleActions):
+class Bicycle(Movable, Pedalable):
     symbol = "\U0001F6B2"
 
     def __init__(self, name):
@@ -86,24 +75,31 @@ class Bicycle(VehicleActions):
     def move(self):
         self.position += 3
 
-    def refuel(self):
-        # TODO(ISP): Bicycle shouldn't need to implement this at all.
-        raise NotImplementedError("Bicycles don't use fuel!")
-
-    def fly(self):
-        raise NotImplementedError("Bicycles can't fly!")
-
     def pedal_harder(self):
         self.position += 1
         print(f"{self.name}'s rider pedals harder!")
 
 
-# TODO(ISP): add a Drone class here (Movable + Flyable only).
+class Drone(Movable, Flyable):
+    symbol = "\U0001F681"  # 🚁
+
+    def __init__(self, name):
+        self.name = name
+        self.position = 0
+
+    def move(self):
+        self.position += 6
+
+    def fly(self):
+        print(f"{self.name} flies!")
 
 
 def main():
-    vehicles = [GasCar("Racer"), Bicycle("Pedal Pete")]
-    # TODO(ISP): once Drone exists, add Drone("Sky Scout") to the race.
+    vehicles = [
+        GasCar("Racer"),
+        Bicycle("Pedal Pete"),
+        Drone("Sky Scout"),
+    ]
     Track(length=30).run(vehicles)
 
 

@@ -56,9 +56,17 @@ class Truck(Vehicle):
 class Motorcycle(Vehicle):
     symbol = "\U0001F3CD"
 
+    def __init__(self, name: str):
+        super().__init__(name)
+        self._tick = 0
+
     def move(self) -> None:
-        # TODO(OCP): move forward by a varying, sometimes-large amount.
-        raise NotImplementedError("Implement Motorcycle.move()")
+        # Patrón determinista y errático:
+        # a veces avanza poquito, a veces da un salto grande.
+        pattern = (1, 8, 2, 9, 3, 10)
+        step = pattern[self._tick % len(pattern)]
+        self.position += step
+        self._tick += 1
 
 
 class Bicycle(Vehicle):
@@ -66,13 +74,12 @@ class Bicycle(Vehicle):
 
     def __init__(self, name: str):
         super().__init__(name)
-        # TODO(OCP): add any state you need to track fatigue over time.
+        self._fatigue = 6  # empieza fuerte y se va cansando
 
     def move(self) -> None:
-        # TODO(OCP): move forward by a shrinking amount as ticks go by
-        # (never less than 1).
-        raise NotImplementedError("Implement Bicycle.move()")
-
+        step = max(1, self._fatigue)
+        self.position += step
+        self._fatigue -= 1  # cada vez avanza menos, pero nunca menos de 1
 
 def main():
     vehicles = [
